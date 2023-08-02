@@ -3,8 +3,15 @@ import numpy as np
 from assignment_solution import IdealFunctionSelector
 
 class TestIdealFunctionSelectorClass(unittest.TestCase):
+    """
+    Test cases for the IdealFunctionSelector class.
+    """
 
     def test_calculate_lse(self):
+        """
+        Test the calculate_lse method of IdealFunctionSelector class.
+        """
+
         # Create an instance of IdealFunctionSelector with some example data
         train = [1, 2, 3, 4, 5]
         ideal_functions = [3, 4, 5, 6, 7]
