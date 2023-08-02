@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sqlalchemy import create_engine
+import os
 #from sqlalchemy.orm import sessionmaker
 
 
@@ -153,10 +154,10 @@ class Visualise:
         self.test = test
         self.ideal_functions = ideal_functions
 
+
     def visualise_train(self):
         """
         Visualize the training data using separate line charts for each y column.
-
         Each y column will have its own scatter plot with x as the common x-axis.
 
         :raises VisualizationException: If there is an error in visualizing the training data.
@@ -166,7 +167,10 @@ class Visualise:
             x = self.train['x']
             # Get y-values for each column
             y_values = self.train[['y1', 'y2', 'y3', 'y4']]
-            # Loop over all the y columns of train set and create a separate scatter plot for each x - y pair
+            # Create the "train_set_visualisations" folder if it doesn't exist
+            if not os.path.exists("train_set_visualisations"):
+                os.makedirs("train_set_visualisations")
+            # Loop over all the y columns of the train set and create a separate scatter plot for each x - y pair
             for column in y_values.columns:
                 y = y_values[column]
                 fig, ax = plt.subplots(figsize=(8, 6))
@@ -175,9 +179,13 @@ class Visualise:
                 ax.set_ylabel('y')
                 ax.set_title(f'Training Data Line Chart ({column})')
                 ax.legend()
-                plt.show()
+                # Save the figure with the filename as the chart title inside the "train_set_visualisations" folder
+                filename = f"train_set_visualisations/{column}_line_chart.png"
+                plt.savefig(filename)
+                plt.close()
         except Exception as e:
             raise VisualizationException(f"Error in Visualising Train Set\nError: {e}")
+
 
     def visualise_test(self):
         """
@@ -191,14 +199,20 @@ class Visualise:
             ax.set_xlabel('x')
             ax.set_ylabel('y')
             ax.set_title('Test Data Scatter Plot')
-            plt.show()
+            # Create the "test_set_visualisation" folder if it doesn't exist
+            if not os.path.exists("test_set_visualisation"):
+                os.makedirs("test_set_visualisation")
+            # Save the figure as "test_scatter_plot.png" inside the "test_set_visualisation" folder
+            filename = "test_set_visualisation/test_scatter_plot.png"
+            plt.savefig(filename)
+            plt.close()
         except Exception as e:
             raise VisualizationException(f"Error in Visualising Test Set\nError: {e}")
+
 
     def visualise_ideal(self):
         """
         Visualize the ideal functions data using separate scatter plots for each ideal function.
-
         Each ideal function will have its own scatter plot with x as the common x-axis.
 
         :raises VisualizationException: If there is an error in visualizing the ideal functions data.
@@ -237,10 +251,21 @@ class Visualise:
 
             # Adjust spacing between subplots
             plt.tight_layout(rect=[0, 0.03, 1, 0.94])
-            plt.show()
+
+            # Create the "ideal_set_visualisations" folder if it doesn't exist
+            if not os.path.exists("ideal_set_visualisations"):
+                os.makedirs("ideal_set_visualisations")
+                filename = "ideal_set_visualisations/ideal_functions_scatter_plot.png"
+                plt.savefig(filename)
+                plt.close()
+            else:
+                filename = "ideal_set_visualisations/ideal_functions_scatter_plot.png"
+                plt.savefig(filename)
+                plt.close()
 
         except Exception as e:
             raise VisualizationException(f"Error in Visualising Ideal Set\nError: {e}")
+
 
     def visualise_task_2_output(self, data):
         """
@@ -264,6 +289,7 @@ class Visualise:
             plt.ylabel("Test (Y)")
             plt.title("Scatter Plot of Task 2 Results")
             plt.legend()
+            return plt.savefig("Scatter Plot of Task 2 Results.png")
 
         except Exception as e:
             raise VisualizationException(f"Error in Visualising Task 2 Output\nError: {e}")
