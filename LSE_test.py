@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from practice import IdealFunctionSelector
+from assignment_solution import IdealFunctionSelector
 
 class TestIdealFunctionSelectorClass(unittest.TestCase):
 
