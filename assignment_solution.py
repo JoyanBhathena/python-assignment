@@ -1,9 +1,9 @@
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sqlalchemy import create_engine
-import os
-#from sqlalchemy.orm import sessionmaker
+
 
 
 print("Libraries loaded successfully!")
@@ -75,26 +75,26 @@ class LoadData:
             for file in files_list:
                 if 'train' in file:
                     try:
-                        train = pd.read_csv(file)
-                        train.to_sql('train_data', engine, if_exists='replace', index=False)
-                    except Exception as e:
-                        raise DataLoadException(f"Error in loading Train Set from {file}:\n{str(e)}")
+                        local_train = pd.read_csv(file)
+                        local_train.to_sql('train_data', engine, if_exists='replace', index=False)
+                    except Exception as e_train:
+                        raise DataLoadException(f"Error in loading Train Set from {file}:\n{str(e_train)}")
                         error_flag = True
 
                 elif 'ideal' in file:
                     try:
-                        ideal_functions = pd.read_csv(file)
-                        ideal_functions.to_sql('ideal_functions_data', engine, if_exists='replace', index=False)
-                    except Exception as e:
-                        raise DataLoadException(f"Error in loading Ideal Set from {file}:\n{str(e)}")
+                        local_ideal_functions = pd.read_csv(file)
+                        local_ideal_functions.to_sql('ideal_functions_data', engine, if_exists='replace', index=False)
+                    except Exception as e_ideal:
+                        raise DataLoadException(f"Error in loading Ideal Set from {file}:\n{str(e_ideal)}")
                         error_flag = True
 
                 elif 'test' in file:
                     try:
-                        test = pd.read_csv(file)
-                        test.to_sql('test_data', engine, if_exists='replace', index=False)
-                    except Exception as e:
-                        raise DataLoadException(f"Error in loading Test Set from {file}:\n{str(e)}")
+                        local_test = pd.read_csv(file)
+                        local_test.to_sql('test_data', engine, if_exists='replace', index=False)
+                    except Exception as e_test:
+                        raise DataLoadException(f"Error in loading Test Set from {file}:\n{str(e_test)}")
                         error_flag = True
 
             # Close the database connection
@@ -103,9 +103,9 @@ class LoadData:
             # Print "All Files loaded successfully!" if no errors occurred during loading
             if not error_flag:
                 print("All Files loaded into the DB successfully!")
-                return train, ideal_functions, test
-        except Exception as e:
-            raise DatabaseConnectionException(f"Error in creating the database connection:\n{str(e)}")
+                return local_train, local_ideal_functions, local_test
+        except Exception as e_data_load:
+            raise DatabaseConnectionException(f"Error in creating the database connection:\n{str(e_data_load)}")
 
 
 # Child Class
@@ -135,8 +135,8 @@ class DataFrameToSQL(LoadData):
             # Load the DataFrame into the database as a table
             dataframe.to_sql(table_name, engine, if_exists='replace', index=False)
             print(f"DataFrame loaded as table '{table_name}' into the database successfully!")
-        except Exception as e:
-            raise DataFrameToSQLException(f"Error in loading DataFrame as table into the database:\n{str(e)}")
+        except Exception as e_dataframe:
+            raise DataFrameToSQLException(f"Error in loading DataFrame as table into the database:\n{str(e_dataframe)}")
 
         # Close the database connection
         engine.dispose()
@@ -183,8 +183,8 @@ class Visualise:
                 filename = f"train_set_visualisations/{column}_line_chart.png"
                 plt.savefig(filename)
                 plt.close()
-        except Exception as e:
-            raise VisualizationException(f"Error in Visualising Train Set\nError: {e}")
+        except Exception as e_visualise_train:
+            raise VisualizationException(f"Error in Visualising Train Set\nError: {e_visualise_train}")
 
 
     def visualise_test(self):
@@ -206,8 +206,8 @@ class Visualise:
             filename = "test_set_visualisation/test_scatter_plot.png"
             plt.savefig(filename)
             plt.close()
-        except Exception as e:
-            raise VisualizationException(f"Error in Visualising Test Set\nError: {e}")
+        except Exception as e_visualise_test:
+            raise VisualizationException(f"Error in Visualising Test Set\nError: {e_visualise_test}")
 
 
     def visualise_ideal(self):
@@ -227,10 +227,6 @@ class Visualise:
             # Plotting separate scatter plots for each 'x' and 'y' pair
             num_plots = len(y_columns)
             num_cols = 3  # Number of columns in the grid of subplots
-            """
-            number of rows will equal to number of "y" features + number of columns - 1 // number of columns
-            In our case, (50 + 3 - 1) // 3 = 17 rows
-            """
             num_rows = (num_plots + num_cols - 1) // num_cols
 
             fig, axes = plt.subplots(num_rows, num_cols, figsize=(10, 3*num_rows))
@@ -263,8 +259,8 @@ class Visualise:
                 plt.savefig(filename)
                 plt.close()
 
-        except Exception as e:
-            raise VisualizationException(f"Error in Visualising Ideal Set\nError: {e}")
+        except Exception as e_visualise_ideal:
+            raise VisualizationException(f"Error in Visualising Ideal Set\nError: {e_visualise_ideal}")
 
 
     def visualise_task_2_output(self, data):
@@ -291,8 +287,8 @@ class Visualise:
             plt.legend()
             return plt.savefig("Scatter Plot of Task 2 Results.png")
 
-        except Exception as e:
-            raise VisualizationException(f"Error in Visualising Task 2 Output\nError: {e}")
+        except Exception as e_visualise:
+            raise VisualizationException(f"Error in Visualising Task 2 Output\nError: {e_visualise}")
 
 class IdealFunctionSelector:
     def __init__(self, train, ideal_functions):
@@ -370,8 +366,8 @@ class IdealFunctionSelector:
             # Return the final DataFrame with the results
             return results_df_lse
 
-        except Exception as e:
-            raise IdealFunctionSelectorException(f"Error encountered: {e}")
+        except Exception as e_ideal_functions_selector:
+            raise IdealFunctionSelectorException(f"Error encountered: {e_ideal_functions_selector}")
 
 
 class IdealFunctionMapper:
@@ -457,8 +453,8 @@ class IdealFunctionMapper:
             # return the final DataFrame with the results for task 2
             return task2_results_df_lse
 
-        except Exception as e:
-            raise IdealFunctionMapperException(f"Error encountered: {e}")
+        except Exception as e_ideal_functions_mapper:
+            raise IdealFunctionMapperException(f"Error encountered: {e_ideal_functions_mapper}")
 
 if __name__ == "__main__":
     try:
@@ -503,17 +499,17 @@ if __name__ == "__main__":
         # load_dataframe_to_sql() takes in DataFrame, table name as function aruguments
         data_loader.load_dataframe_to_sql(task_2_output, 'task_2_output')
 
-    except DataLoadException as e:
-        print(f"Data loading error: {str(e)}")
-    except DatabaseConnectionException as e:
-        print(f"Database connection error: {str(e)}")
-    except VisualizationException as e:
-        print(f"Visualization error: {str(e)}")
-    except IdealFunctionSelectorException as e:
-        print(f"Ideal function selection error: {str(e)}")
-    except IdealFunctionMapperException as e:
-        print(f"Ideal function mapping error: {str(e)}")
-    except DataFrameToSQLException as e:
-        print(f"DataFrame to SQL error: {str(e)}")
-    except Exception as e:
-        print(f"An unexpected error occurred:\n{str(e)}")
+    except DataLoadException as e_data_load:
+        print(f"Data loading error: {str(e_data_load)}")
+    except DatabaseConnectionException as e_db_connection:
+        print(f"Database connection error: {str(e_db_connection)}")
+    except VisualizationException as e_visualize_exp:
+        print(f"Visualization error: {str(e_visualize_exp)}")
+    except IdealFunctionSelectorException as e_ideal_selector:
+        print(f"Ideal function selection error: {str(e_ideal_selector)}")
+    except IdealFunctionMapperException as e_ideal_mapper:
+        print(f"Ideal function mapping error: {str(e_ideal_mapper)}")
+    except DataFrameToSQLException as e_df_to_sql:
+        print(f"DataFrame to SQL error: {str(e_df_to_sql)}")
+    except Exception as e_general:
+        print(f"An unexpected error occurred:\n{str(e_general)}")
