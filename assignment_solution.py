@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 from sqlalchemy import create_engine
 
 
-
 print("Libraries loaded successfully!")
 
 # Custom Exception classes
+
+
 class DataLoadException(Exception):
     """Custom exception class for catching data load exceptions."""
     pass
@@ -68,7 +69,8 @@ class LoadData:
         try:
             # Create a database connection using SQLAlchemy
             engine = create_engine(database_connection)
-            files_list = [self.train_path, self.test_path, self.ideal_functions_path]
+            files_list = [self.train_path,
+                          self.test_path, self.ideal_functions_path]
             error_flag = False  # Initialize error flag as False
 
             # Load CSV files into DataFrames and store them in the database as tables
@@ -76,25 +78,31 @@ class LoadData:
                 if 'train' in file:
                     try:
                         local_train = pd.read_csv(file)
-                        local_train.to_sql('train_data', engine, if_exists='replace', index=False)
+                        local_train.to_sql(
+                            'train_data', engine, if_exists='replace', index=False)
                     except Exception as e_train:
-                        raise DataLoadException(f"Error in loading Train Set from {file}:\n{str(e_train)}")
+                        raise DataLoadException(
+                            f"Error in loading Train Set from {file}:\n{str(e_train)}")
                         error_flag = True
 
                 elif 'ideal' in file:
                     try:
                         local_ideal_functions = pd.read_csv(file)
-                        local_ideal_functions.to_sql('ideal_functions_data', engine, if_exists='replace', index=False)
+                        local_ideal_functions.to_sql(
+                            'ideal_functions_data', engine, if_exists='replace', index=False)
                     except Exception as e_ideal:
-                        raise DataLoadException(f"Error in loading Ideal Set from {file}:\n{str(e_ideal)}")
+                        raise DataLoadException(
+                            f"Error in loading Ideal Set from {file}:\n{str(e_ideal)}")
                         error_flag = True
 
                 elif 'test' in file:
                     try:
                         local_test = pd.read_csv(file)
-                        local_test.to_sql('test_data', engine, if_exists='replace', index=False)
+                        local_test.to_sql('test_data', engine,
+                                          if_exists='replace', index=False)
                     except Exception as e_test:
-                        raise DataLoadException(f"Error in loading Test Set from {file}:\n{str(e_test)}")
+                        raise DataLoadException(
+                            f"Error in loading Test Set from {file}:\n{str(e_test)}")
                         error_flag = True
 
             # Close the database connection
@@ -105,7 +113,8 @@ class LoadData:
                 print("All Files loaded into the DB successfully!")
                 return local_train, local_ideal_functions, local_test
         except Exception as e_data_load:
-            raise DatabaseConnectionException(f"Error in creating the database connection:\n{str(e_data_load)}")
+            raise DatabaseConnectionException(
+                f"Error in creating the database connection:\n{str(e_data_load)}")
 
 
 # Child Class
@@ -133,13 +142,17 @@ class DataFrameToSQL(LoadData):
 
         try:
             # Load the DataFrame into the database as a table
-            dataframe.to_sql(table_name, engine, if_exists='replace', index=False)
-            print(f"DataFrame loaded as table '{table_name}' into the database successfully!")
+            dataframe.to_sql(table_name, engine,
+                             if_exists='replace', index=False)
+            print(
+                f"DataFrame loaded as table '{table_name}' into the database successfully!")
         except Exception as e_dataframe:
-            raise DataFrameToSQLException(f"Error in loading DataFrame as table into the database:\n{str(e_dataframe)}")
+            raise DataFrameToSQLException(
+                f"Error in loading DataFrame as table into the database:\n{str(e_dataframe)}")
 
         # Close the database connection
         engine.dispose()
+
 
 class Visualise:
     def __init__(self, train, test, ideal_functions):
@@ -153,7 +166,6 @@ class Visualise:
         self.train = train
         self.test = test
         self.ideal_functions = ideal_functions
-
 
     def visualise_train(self):
         """
@@ -184,8 +196,8 @@ class Visualise:
                 plt.savefig(filename)
                 plt.close()
         except Exception as e_visualise_train:
-            raise VisualizationException(f"Error in Visualising Train Set\nError: {e_visualise_train}")
-
+            raise VisualizationException(
+                f"Error in Visualising Train Set\nError: {e_visualise_train}")
 
     def visualise_test(self):
         """
@@ -207,8 +219,8 @@ class Visualise:
             plt.savefig(filename)
             plt.close()
         except Exception as e_visualise_test:
-            raise VisualizationException(f"Error in Visualising Test Set\nError: {e_visualise_test}")
-
+            raise VisualizationException(
+                f"Error in Visualising Test Set\nError: {e_visualise_test}")
 
     def visualise_ideal(self):
         """
@@ -229,7 +241,8 @@ class Visualise:
             num_cols = 3  # Number of columns in the grid of subplots
             num_rows = (num_plots + num_cols - 1) // num_cols
 
-            fig, axes = plt.subplots(num_rows, num_cols, figsize=(10, 3*num_rows))
+            fig, axes = plt.subplots(
+                num_rows, num_cols, figsize=(10, 3*num_rows))
             fig.suptitle('Scatter Plot For Each Ideal Function', fontsize=12)
 
             for i, y_col in enumerate(y_columns):
@@ -260,8 +273,8 @@ class Visualise:
                 plt.close()
 
         except Exception as e_visualise_ideal:
-            raise VisualizationException(f"Error in Visualising Ideal Set\nError: {e_visualise_ideal}")
-
+            raise VisualizationException(
+                f"Error in Visualising Ideal Set\nError: {e_visualise_ideal}")
 
     def visualise_task_2_output(self, data):
         """
@@ -288,7 +301,9 @@ class Visualise:
             return plt.savefig("Scatter Plot of Task 2 Results.png")
 
         except Exception as e_visualise:
-            raise VisualizationException(f"Error in Visualising Task 2 Output\nError: {e_visualise}")
+            raise VisualizationException(
+                f"Error in Visualising Task 2 Output\nError: {e_visualise}")
+
 
 class IdealFunctionSelector:
     def __init__(self, train, ideal_functions):
@@ -325,8 +340,10 @@ class IdealFunctionSelector:
         """
         try:
             # Retrieve all the "y" columns for train and ideal
-            y_columns_train = [col for col in self.train.columns if col.startswith('y')]
-            y_columns_ideal = [col for col in self.ideal_functions.columns if col.startswith('y')]
+            y_columns_train = [
+                col for col in self.train.columns if col.startswith('y')]
+            y_columns_ideal = [
+                col for col in self.ideal_functions.columns if col.startswith('y')]
 
             # Create an empty list to store the results
             results_list_lse = []
@@ -361,13 +378,15 @@ class IdealFunctionSelector:
                 })
 
             # Create a DataFrame from the results list
-            results_df_lse = pd.concat([pd.DataFrame([result]) for result in results_list_lse], ignore_index=True)
+            results_df_lse = pd.concat(
+                [pd.DataFrame([result]) for result in results_list_lse], ignore_index=True)
 
             # Return the final DataFrame with the results
             return results_df_lse
 
         except Exception as e_ideal_functions_selector:
-            raise IdealFunctionSelectorException(f"Error encountered: {e_ideal_functions_selector}")
+            raise IdealFunctionSelectorException(
+                f"Error encountered: {e_ideal_functions_selector}")
 
 
 class IdealFunctionMapper:
@@ -420,7 +439,8 @@ class IdealFunctionMapper:
                     # Loop through each value in the 'y' feature column of the ideal set
                     for y_ideal_value in y_ideal_values:
                         # Calculate the LSE between the test 'y' value and the current 'y' feature value in the ideal set
-                        lse = self.selector.calculate_lse(y_value, y_ideal_value)
+                        lse = self.selector.calculate_lse(
+                            y_value, y_ideal_value)
 
                         # Update the best match if a better match is found
                         if lse < best_lse:
@@ -448,13 +468,16 @@ class IdealFunctionMapper:
                     'Assigned Ideal Function': assigned_ideal})
 
             # Create a DataFrame from the results list
-            task2_results_df_lse = pd.concat([pd.DataFrame([result]) for result in task2_results_list], ignore_index=True)
+            task2_results_df_lse = pd.concat(
+                [pd.DataFrame([result]) for result in task2_results_list], ignore_index=True)
 
             # return the final DataFrame with the results for task 2
             return task2_results_df_lse
 
         except Exception as e_ideal_functions_mapper:
-            raise IdealFunctionMapperException(f"Error encountered: {e_ideal_functions_mapper}")
+            raise IdealFunctionMapperException(
+                f"Error encountered: {e_ideal_functions_mapper}")
+
 
 if __name__ == "__main__":
     try:
@@ -469,7 +492,8 @@ if __name__ == "__main__":
 
         # call the function load_csv_to_database to store the data into the DB and return the files as DataFrames
         train, ideal_functions, test = load_data.load_csv_to_database()
-        print(f"Train Shape: {train.shape}\nIdeal Functions Shape: {ideal_functions.shape}\nTest Shape: {test.shape}\n")
+        print(
+            f"Train Shape: {train.shape}\nIdeal Functions Shape: {ideal_functions.shape}\nTest Shape: {test.shape}\n")
 
         # create an instance of Visualise class and now pass the 3 DataFrames as parameters
         visualiser = Visualise(train, test, ideal_functions)
@@ -483,7 +507,7 @@ if __name__ == "__main__":
         """
         task_1_output = IdealFunctionSelector(
             train, ideal_functions).select_ideal_functions()
-        print("Selected Ideal Functions based on Train Set\n",task_1_output)
+        print("Selected Ideal Functions based on Train Set\n", task_1_output)
 
         """
         Run map_ideal_functions() from IdealFunctionMapper with 
