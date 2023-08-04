@@ -469,6 +469,7 @@ if __name__ == "__main__":
 
         # call the function load_csv_to_database to store the data into the DB and return the files as DataFrames
         train, ideal_functions, test = load_data.load_csv_to_database()
+        print(f"Train Shape: {train.shape}\nIdeal Functions Shape: {ideal_functions.shape}\nTest Shape: {test.shape}\n")
 
         # create an instance of Visualise class and now pass the 3 DataFrames as parameters
         visualiser = Visualise(train, test, ideal_functions)
@@ -482,6 +483,7 @@ if __name__ == "__main__":
         """
         task_1_output = IdealFunctionSelector(
             train, ideal_functions).select_ideal_functions()
+        print("Selected Ideal Functions based on Train Set\n",task_1_output)
 
         """
         Run map_ideal_functions() from IdealFunctionMapper with 
@@ -498,6 +500,7 @@ if __name__ == "__main__":
             TRAIN_PATH, TEST_PATH, IDEAL_FUNCTIONS_PATH)
         # load_dataframe_to_sql() takes in DataFrame, table name as function aruguments
         data_loader.load_dataframe_to_sql(task_2_output, 'task_2_output')
+        print("Task Completed!")
 
     except DataLoadException as e_data_load:
         print(f"Data loading error: {str(e_data_load)}")
