@@ -483,9 +483,9 @@ if __name__ == "__main__":
     try:
         # Constant Variables
         # Update the PATH variables as per your system
-        TRAIN_PATH = 'train_MSCS.csv'
-        TEST_PATH = 'test_MSCS.csv'
-        IDEAL_FUNCTIONS_PATH = 'ideal_MSCS.csv'
+        TRAIN_PATH = 'train_dataset_1.csv'
+        TEST_PATH = 'test_dataset_1.csv'
+        IDEAL_FUNCTIONS_PATH = 'ideal_dataset_1.csv'
 
         # create an instance of LoadData Class, with file paths as the parameters
         load_data = LoadData(TRAIN_PATH, TEST_PATH, IDEAL_FUNCTIONS_PATH)
